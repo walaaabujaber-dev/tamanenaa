@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>طمأنينة باسمك</title>
+<style>
+  body {
+    font-family: "Tajawal", sans-serif;
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:20px;
+    background: linear-gradient(-45deg, #a1c4fd, #c2e9fb, #667eea, #764ba2);
+    background-size: 400% 400%;
+    animation: gradientBG 15s ease infinite;
+  }
+
+  @keyframes gradientBG {
+    0% {background-position: 0% 50%;}
+    50% {background-position: 100% 50%;}
+    100% {background-position: 0% 50%;}
+  }
+
+  .card {
+    background:#fff;
+    width:100%; max-width:560px;
+    padding:30px; border-radius:18px;
+    box-shadow:0 10px 25px rgba(0,0,0,0.08);
+    text-align:center;
+  }
+
+  input {
+    width:90%; padding:12px; border-radius:12px; border:1px solid #cfe3ff;
+    margin-top:15px; font-size:18px;
+  }
+
+  button {
+    margin-top:18px; padding:12px 22px;
+    background:#4a90e2; color:#fff; border:none;
+    border-radius:12px; cursor:pointer; font-size:18px;
+  }
+
+  .ayah-box {
+    margin-top:26px; padding:18px;
+    background:#eef5ff; border-radius:14px;
+    font-size:20px; display:none;
+  }
+
+  .small { font-size:13px; color:#666; margin-top:8px; }
+</style>
+</head>
+<body>
+  <div class="card">
+    <h2>طمأنينة باسمك</h2>
+    <p class="small">اكتب اسمك لتحصل على آية من القرآن مع رسالة أمل. كل اسم يعطي آية ثابتة ومختلفة.</p>
+
+    <input id="username" placeholder="اكتب اسمك هنا..." autocomplete="off" />
+    <br/>
+    <button id="showBtn">أظهر رسالتي</button>
+
+    <div id="ayah" class="ayah-box"></div>
+  </div>
+
+<script>
+const ayat = [
+  "﴿وَعَسَىٰ أَن تَكْرَهُوا شَيْئًا وَهُوَ خَيْرٌ لَّكُمْ﴾ — (البقرة 216)",
+  "﴿وَمَن يَتَّقِ اللَّهَ يَجْعَل لَّهُ مَخْرَجًا﴾ — (الطلاق 2)",
+  "﴿لَا تَحْزَنْ إِنَّ اللَّهَ مَعَنَا﴾ — (التوبة 40)",
+  "﴿إِنَّ مَعَ الْعُسْرِ يُسْرًا﴾ — (الشرح 6)",
+  "﴿وَرَحْمَتِي وَسِعَتْ كُلَّ شَيْءٍ﴾ — (الأعراف 156)",
+  "﴿وَمَن يَتَوَكَّلْ عَلَى اللَّهِ فَهُوَ حَسْبُهُ﴾ — (الطلاق 3)",
+  "﴿ادْعُونِي أَسْتَجِبْ لَكُمْ﴾ — (غافر 60)",
+  "﴿إِنَّ رَبِّي لَطِيفٌ لِمَا يَشَاءُ﴾ — (النمل 40)",
+  "﴿وَهُوَ عَلَيْكُمْ رَحِيمٌ﴾ — (البقرة 163)",
+  "﴿إِنَّهُ عَلِيمٌ بِذَاتِ الصُّدُورِ﴾ — (غافر 19)"
+];
+
+function nameHash(name) {
+  const s = name.normalize('NFC');
+  let h = 2166136261;
+  for (let i = 0; i < s.length; i++) {
+    h ^= s.charCodeAt(i);
+    h = (h * 16777619) >>> 0;
+  }
+  return h;
+}
+
+function getAyahForName(name) {
+  const clean = name.replace(/[^؀-ۿa-zA-Z\s'-]/g, '').trim();
+  if (!clean) return null;
+  const idx = nameHash(clean) % ayat.length;
+  return ayat[idx];
+}
+
+function showAyah() {
+  const input = document.getElementById('username');
+  const name = input.value;
+  const ay = getAyahForName(name);
+  const box = document.getElementById('ayah');
+  if (!ay) {
+    alert('الرجاء إدخال اسم صالح (حروف فقط).');
+    box.style.display = 'none';
+    return;
+  }
+  box.innerHTML = `<strong>${escapeHtml(name)}</strong> ❤️<br/><br/>${ay}`;
+  box.style.display = 'block';
+}
+
+document.getElementById('username').addEventListener('keydown', function(e){ if(e.key==='Enter'){ showAyah(); }});
+document.getElementById('showBtn').addEventListener('click', showAyah);
+
+function escapeHtml(text) {
+  const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+  return text.replace(/[&<>"']/g, function(m){ return map[m]; });
+}
+</script>
+</body>
+</html>
